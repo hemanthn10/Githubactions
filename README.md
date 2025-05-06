@@ -135,3 +135,48 @@ jobs:
             docker rm webapp || true &&
             docker run -d --name webapp -p 80:80 $IMAGE_NAME:previous
           "
+
+=============================================================================
+
+Bonus Features
+✅ Manual Approval via GitHub Environments
+This workflow uses GitHub Environments for production deployment, which allows for manual approval before deploying.
+
+The deploy job is tied to the production environment:
+
+yaml
+Copy
+Edit
+environment:
+  name: production
+  url: https://your-app-url.com
+
+
+✅ Rollback Logic on Deployment Failure
+The workflow includes automatic rollback logic in case the deployment fails:
+
+yaml
+Copy
+Edit
+- name: Rollback on failure
+  if: failure()
+  run: |
+    echo "Deployment failed. Rolling back..."
+    ssh user@your-server "
+      docker stop webapp || true &&
+      docker rm webapp || true &&
+      docker run -d --name webapp -p 80:80 $IMAGE_NAME:previous
+    "
+If the deployment step fails (e.g., due to container crash or port conflict), the pipeline:
+
+Stops and removes the failed container.
+
+Launches a previous version tagged as :previous.
+
+🛠 Important: You must manually push or tag a working Docker image as :previous after a successful deployment:
+
+bash
+Copy
+Edit
+docker tag yourdockerhubusername/sample-webapp:latest yourdockerhubusername/sample-webapp:previous
+docker push yourdockerhubusername/sample-webapp:previous
