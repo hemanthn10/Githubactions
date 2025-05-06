@@ -1,0 +1,21 @@
+name: Rollback
+
+on:
+  workflow_dispatch:
+    inputs:
+      image_tag:
+        description: 'Docker image tag to rollback to'
+        required: true
+
+jobs:
+  rollback:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Rollback Reminder
+        run: |
+          echo "To rollback locally, run:"
+          echo "docker pull ${{ secrets.DOCKERHUB_USERNAME }}/sample-webapp:${{ github.event.inputs.image_tag }}"
+          echo "docker stop webapp"
+          echo "docker rm webapp"
+          echo "docker run -d --name webapp -p 80:3000 ${{ secrets.DOCKERHUB_USERNAME }}/sample-webapp:${{ github.event.inputs.image_tag }}"
