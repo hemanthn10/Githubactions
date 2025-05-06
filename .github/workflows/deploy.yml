@@ -1,0 +1,22 @@
+name: Deploy
+
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    needs: build-and-push
+    environment:
+      name: local
+
+    steps:
+      - name: Deploy Reminder
+        run: |
+          echo "Docker image is ready: ${{ secrets.DOCKERHUB_USERNAME }}/sample-webapp:${{ github.sha }}"
+          echo "To deploy locally, run:"
+          echo "docker pull ${{ secrets.DOCKERHUB_USERNAME }}/sample-webapp:${{ github.sha }}"
+          echo "docker stop webapp || true && docker rm webapp || true"
+          echo "docker run -d --name webapp -p 80:3000 ${{ secrets.DOCKERHUB_USERNAME }}/sample-webapp:${{ github.sha }}"
